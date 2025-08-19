@@ -1,12 +1,13 @@
 # info.yaml  
-title: "ASIC Onboarding Project - Harry Wang"  
-author: "Harry Wang"  
-description: "SPI-controlled PWM peripheral for Tiny Tapeout."  
-top_module: "tt_um_uwasic_onboarding_harry_wang"  # Match your top module name  
-source_files:  
-  - "spi peripheral"
-  - pwm_peripheral.v  
-  - project.v
+project:  
+  title: "ASIC Onboarding Project - Harry Wang"  
+  author: "Harry Wang"  
+  description: "SPI-controlled PWM peripheral for Tiny Tapeout."  
+  top_module: "tt_um_uwasic_onboarding_harry_wang"  # Match your top module name  
+  source_files:  
+    - spi_peripheral.v
+    - pwm_peripheral.v  
+    - project.v
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).

@@ -37,6 +37,18 @@ module tt_um_uwasic_onboarding_harry_wang (
     .pwm_duty_cycle(pwm_duty_cycle),
     .out({uio_out, uo_out})
   );
+
+  spi_peripheral spi_peripheral_inst(
+    .SCLK(clk),
+    .NRST(rst_n),
+    .MOSI(uio_in[1]),
+    .out_en_reg_7_0(en_reg_out_7_0),
+    .out_en_reg_15_8(en_reg_out_15_8),
+    .out_en_pwm_7_0(en_reg_pwm_7_0),
+    .out_en_pwm_15_8(en_reg_pwm_15_8),
+    .out_pwm_duty_cycle(pwm_duty_cycle)
+  );
+
   // Add uio_in and ui_in[7:3] to the list of unused signals:
   wire _unused = &{ena, ui_in[7:3], uio_in, 1'b0};
 
