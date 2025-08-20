@@ -15,8 +15,8 @@ reg action = 0;
 reg [6:0] addr;
 reg [7:0] data;
 
-reg transaction_processed = 1'b0;
-reg transaction_ready = 1'b0;
+reg transaction_processed;
+reg transaction_ready ;
 reg [1:0] nCS_sync = 0, MOSI_sync = 0;
 reg [2:0] SCLK_sync = 0;
 reg [7:0] en_reg_7_0, en_reg_15_8, en_pwm_7_0, en_pwm_15_8, pwm_duty_cycle;
@@ -58,6 +58,7 @@ always @(posedge clk or negedge nrst) begin
         nCS_sync <= 'b11;
         MOSI_sync <= 0;
         SCLK_sync <= 0;
+        transaction_ready <= 1'b0;
     end 
     else begin 
         nCS_sync[0] <= nCS;
@@ -88,7 +89,6 @@ end
 always @(posedge clk or negedge nrst) begin
     if (!nrst) begin
         transaction_processed <= 1'b0;
-        transaction_ready <= 1'b0;
     end else if (transaction_ready && !transaction_processed) begin
         // Transaction is ready and not yet processed
         // Set the processed flag
