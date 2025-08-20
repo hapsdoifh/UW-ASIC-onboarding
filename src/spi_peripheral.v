@@ -10,15 +10,15 @@ module spi_peripheral(
     output wire [7:0] out_en_pwm_15_8,
     output wire [7:0] out_pwm_duty_cycle
 );
-reg [4:0] clk_cnt = 0;
-reg action = 0;
+reg [4:0] clk_cnt;
+reg action;
 reg [6:0] addr;
 reg [7:0] data;
 
 reg transaction_processed;
 reg transaction_ready ;
-reg [1:0] nCS_sync = 0, MOSI_sync = 0;
-reg [2:0] SCLK_sync = 0;
+reg [1:0] nCS_sync, MOSI_sync;
+reg [2:0] SCLK_sync;
 reg [7:0] en_reg_7_0, en_reg_15_8, en_pwm_7_0, en_pwm_15_8, pwm_duty_cycle;
 
 wire nCS_posedge;
@@ -36,8 +36,12 @@ assign out_en_pwm_15_8 = en_pwm_15_8;
 assign out_pwm_duty_cycle = pwm_duty_cycle;
 
 
-always @(posedge SCLK_sig) begin
-    if(nCS_value) begin
+always @(posedge SCLK_sig or negedge nrst) begin
+    if(!nrst) begin
+        clk_cnt <= 0;
+        action <= 0;
+    end
+    else if(nCS_value) begin
         if(clk_cnt < 15) clk_cnt <= clk_cnt + 1;
         else clk_cnt <= 0;
         if(clk_cnt == 0) begin
