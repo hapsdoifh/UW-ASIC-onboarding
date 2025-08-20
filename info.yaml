@@ -5,6 +5,8 @@ project:
   description: "SPI-controlled PWM peripheral for Tiny Tapeout."  
   top_module: "tt_um_uwasic_onboarding_harry_wang"  # Match your top module name  
   
+  tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
+
   source_files:  
     - spi_peripheral.v
     - pwm_peripheral.v  
