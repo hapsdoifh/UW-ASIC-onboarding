@@ -12,11 +12,6 @@ module spi_peripheral(
 );
 reg [4:0] clk_cnt = 0;
 reg action = 0;
-reg [1:0] state = IDLE;
-localparam [1:0]    IDLE = 2'b00,
-                    WADDR = 2'b01,
-                    WDATA = 2'b10,
-                    FINISHED = 2'b11;
 reg [6:0] addr;
 reg [7:0] data;
 
