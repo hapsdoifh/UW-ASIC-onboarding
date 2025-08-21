@@ -3,11 +3,12 @@
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge
+from cocotb.triggers import RisingEdge, FallingEdge, Edge, with_timeout
 from cocotb.triggers import ClockCycles
 from cocotb.types import Logic
 from cocotb.types import LogicArray
 from cocotb.utils import get_sim_time
+from cocotb.result import SimTimeoutError
 
 async def await_half_sclk(dut):
     """Wait for the SCLK signal to go high or low."""
@@ -110,43 +111,43 @@ async def test_spi(dut):
     assert dut.uo_out.value == 0xF0, f"Expected 0xF0, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000) 
 
-    # dut._log.info("Write transaction, address 0x01, data 0xCC")
-    # ui_in_val = await send_spi_transaction(dut, 1, 0x01, 0xCC)  # Write transaction
-    # assert dut.uio_out.value == 0xCC, f"Expected 0xCC, got {dut.uio_out.value}"
-    # await ClockCycles(dut.clk, 100)
+    dut._log.info("Write transaction, address 0x01, data 0xCC")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x01, 0xCC)  # Write transaction
+    assert dut.uio_out.value == 0xCC, f"Expected 0xCC, got {dut.uio_out.value}"
+    await ClockCycles(dut.clk, 100)
 
-    # dut._log.info("Write transaction, address 0x30 (invalid), data 0xAA")
-    # ui_in_val = await send_spi_transaction(dut, 1, 0x30, 0xAA)
-    # await ClockCycles(dut.clk, 100)
+    dut._log.info("Write transaction, address 0x30 (invalid), data 0xAA")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x30, 0xAA)
+    await ClockCycles(dut.clk, 100)
 
-    # dut._log.info("Read transaction (invalid), address 0x00, data 0xBE")
-    # ui_in_val = await send_spi_transaction(dut, 0, 0x30, 0xBE)
-    # assert dut.uo_out.value == 0xF0, f"Expected 0xF0, got {dut.uo_out.value}"
-    # await ClockCycles(dut.clk, 100)
+    dut._log.info("Read transaction (invalid), address 0x00, data 0xBE")
+    ui_in_val = await send_spi_transaction(dut, 0, 0x30, 0xBE)
+    assert dut.uo_out.value == 0xF0, f"Expected 0xF0, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 100)
     
-    # dut._log.info("Read transaction (invalid), address 0x41 (invalid), data 0xEF")
-    # ui_in_val = await send_spi_transaction(dut, 0, 0x41, 0xEF)
-    # await ClockCycles(dut.clk, 100)
+    dut._log.info("Read transaction (invalid), address 0x41 (invalid), data 0xEF")
+    ui_in_val = await send_spi_transaction(dut, 0, 0x41, 0xEF)
+    await ClockCycles(dut.clk, 100)
 
-    # dut._log.info("Write transaction, address 0x02, data 0xFF")
-    # ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0xFF)  # Write transaction
-    # await ClockCycles(dut.clk, 100)
+    dut._log.info("Write transaction, address 0x02, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0xFF)  # Write transaction
+    await ClockCycles(dut.clk, 100)
 
-    # dut._log.info("Write transaction, address 0x04, data 0xCF")
-    # ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xCF)  # Write transaction
-    # await ClockCycles(dut.clk, 30000)
+    dut._log.info("Write transaction, address 0x04, data 0xCF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xCF)  # Write transaction
+    await ClockCycles(dut.clk, 30000)
 
-    # dut._log.info("Write transaction, address 0x04, data 0xFF")
-    # ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xFF)  # Write transaction
-    # await ClockCycles(dut.clk, 30000)
+    dut._log.info("Write transaction, address 0x04, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xFF)  # Write transaction
+    await ClockCycles(dut.clk, 30000)
 
-    # dut._log.info("Write transaction, address 0x04, data 0x00")
-    # ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x00)  # Write transaction
-    # await ClockCycles(dut.clk, 30000)
+    dut._log.info("Write transaction, address 0x04, data 0x00")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x00)  # Write transaction
+    await ClockCycles(dut.clk, 30000)
 
-    # dut._log.info("Write transaction, address 0x04, data 0x01")
-    # ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x01)  # Write transaction
-    # await ClockCycles(dut.clk, 30000)
+    dut._log.info("Write transaction, address 0x04, data 0x01")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x01)  # Write transaction
+    await ClockCycles(dut.clk, 30000)
 
     dut._log.info("SPI test completed successfully")
 
@@ -168,24 +169,83 @@ async def test_pwm_freq(dut):
     await ClockCycles(dut.clk, 5)
     # Write your test here
     dut._log.info("Test project behavior")
-    dut._log.info("PWM Frequency, address 0x00, data 0xF0")
     ui_in_val = await send_spi_transaction(dut, 1, 0x00, 0x01)  # Write transaction
     await ClockCycles(dut.clk, 100)
     ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0x01)  # Write transaction
     await ClockCycles(dut.clk, 100)
-    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x88)  # Write transaction
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x7F)  # Write transaction
     await ClockCycles(dut.clk, 1000)
     
     await RisingEdge(dut.pwm_sig) 
-    r_rising_1 = get_sim_time("us")
+    t_rising_1 = get_sim_time("us")
     await RisingEdge(dut.pwm_sig) 
-    r_rising_2 = get_sim_time("us")
-    assert abs(10**6/(r_rising_2 - r_rising_1) - 3000) < 3000*10**6 * 0.01, f"Expected ~3000Hz, got {10**6/(r_rising_2 - r_rising_1)}Hz"
+    t_rising_2 = get_sim_time("us")
+    frequency = 10**6/(t_rising_2 - t_rising_1)
+    assert abs(frequency - 3000) / (3000*10**6) < 0.01, f"Expected ~3000Hz, got {frequency}Hz"
 
     dut._log.info("PWM Frequency test completed successfully")
 
+async def wait_Edge_with_timeout(sig):
+    try:
+        await with_timeout(Edge(sig), 1, timeout_unit="ms")
+        return False 
+    except SimTimeoutError:
+        return True 
 
 @cocotb.test()
 async def test_pwm_duty(dut):
+    # Set the clock period to 100 ns (10 MHz)
+    clock = Clock(dut.clk, 100, units="ns")
+    cocotb.start_soon(clock.start())
+
+    dut._log.info("Reset")
+    dut.ena.value = 1
+    ncs = 1
+    bit = 0
+    sclk = 0
+    dut.ui_in.value = ui_in_logicarray(ncs, bit, sclk)
+    dut.rst_n.value = 0
+    await ClockCycles(dut.clk, 5)
+    dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 5)
     # Write your test here
+    dut._log.info("Test project behavior")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x00, 0x01)  # Write transaction
+    await ClockCycles(dut.clk, 100)
+    ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0x01)  # Write transaction
+    await ClockCycles(dut.clk, 100)
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x7F)  # Write transaction
+    await ClockCycles(dut.clk, 1000)
+    
+    await RisingEdge(dut.pwm_sig) 
+    t_rising = get_sim_time("us")
+    await FallingEdge(dut.pwm_sig) 
+    t_falling = get_sim_time("us")
+    duty_cycle = (t_falling - t_rising)/10**6 * 3000 * 100
+    assert abs(duty_cycle - 50) / 50 < 0.01, f"Expected ~50% duty cycle, got {duty_cycle}"
+
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xB3)  # Write transaction
+    await ClockCycles(dut.clk, 1000)
+    
+    await RisingEdge(dut.pwm_sig) 
+    t_rising = get_sim_time("us")
+    await FallingEdge(dut.pwm_sig) 
+    t_falling = get_sim_time("us")
+    duty_cycle = (t_falling - t_rising)/10**6 * 3000 * 100
+    assert abs(duty_cycle - 70) / 70 < 0.01, f"Expected ~70% duty cycle, got {duty_cycle}"
+
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xFF)  # Write transaction
+    await ClockCycles(dut.clk, 1000)
+    
+    if not await wait_Edge_with_timeout(dut.pwm_sig):
+        assert False, "Expected PWM signal to stay high, but it did not"
+
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x00)  # Write transaction
+    await ClockCycles(dut.clk, 1000)
+    
+    if not await wait_Edge_with_timeout(dut.pwm_sig):
+        assert False, "Expected PWM signal to stay slow, but it did not"
+        
     dut._log.info("PWM Duty Cycle test completed successfully")
+
+    
