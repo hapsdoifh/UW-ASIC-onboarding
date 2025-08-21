@@ -10,7 +10,7 @@ module spi_peripheral(
     output wire [7:0] out_en_pwm_15_8,
     output wire [7:0] out_pwm_duty_cycle
 );
-reg [4:0] clk_cnt;
+reg [3:0] clk_cnt;
 reg action;
 reg [6:0] addr;
 reg [7:0] data;
@@ -38,12 +38,14 @@ assign out_pwm_duty_cycle = pwm_duty_cycle;
 
 always @(posedge SCLK_sig or negedge nrst) begin
     if(!nrst) begin
-        clk_cnt <= 0;
-        action <= 0;
+        clk_cnt <= 4'b0;
+        action <= 1'b0;
+        addr <= 7'b0;
+        data <= 8'b0;
     end
     else if(nCS_value) begin
         if(clk_cnt < 15) clk_cnt <= clk_cnt + 1;
-        else clk_cnt <= 0;
+        else clk_cnt <= 4'b0;
         if(clk_cnt == 0) begin
             action <= MOSI_sig;
         end
@@ -59,10 +61,15 @@ end
 // Process SPI protocol in the clk domain
 always @(posedge clk or negedge nrst) begin
     if (!nrst) begin
-        nCS_sync <= 'b11;
-        MOSI_sync <= 0;
-        SCLK_sync <= 0;
+        nCS_sync <= 2'b11;
+        MOSI_sync <= 2'b0;
+        SCLK_sync <= 3'b0;
         transaction_ready <= 1'b0;
+        en_reg_7_0 <= 8'b0;
+        en_reg_15_8 <= 8'b0;
+        en_pwm_7_0 <= 8'b0;
+        en_pwm_15_8 <= 8'b0;
+        pwm_duty_cycle <= 8'b0;
     end 
     else begin 
         nCS_sync[0] <= nCS;
